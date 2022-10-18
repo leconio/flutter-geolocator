@@ -1,5 +1,7 @@
 package com.baseflow.geolocator.location;
 
+import static com.baseflow.geolocator.location.LocationAccuracy.lowest;
+
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
@@ -110,6 +112,11 @@ class LocationManagerClient implements LocationClient, LocationListener {
       List<String> providers = locationManager.getProviders(true);
       if (providers.size() > 0) provider = providers.get(0);
     }
+    
+    // lowest 强制network
+    if (accuracy == lowest) {
+       provider = "network";
+    }
 
     return provider;
   }
@@ -210,7 +217,8 @@ class LocationManagerClient implements LocationClient, LocationListener {
   @Override
   public synchronized void onLocationChanged(Location location) {
     float desiredAccuracy =
-        locationOptions != null ? accuracyToFloat(locationOptions.getAccuracy()) : 50;
+        locationOptions != null ? 
+      (accuracyToFloat(locationOptions.getAccuracy())) : 50;
 
     if (isBetterLocation(location, currentBestLocation)
         && location.getAccuracy() <= desiredAccuracy) {
